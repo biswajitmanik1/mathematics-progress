@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mathematics — Course Progress Tracker</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="page">
+
+    <!-- ============ HEADER ============ -->
+    <header class="header">
+      <div class="header-text">
+        <p class="eyebrow">Mathematics</p>
+        <h1>Course Progress Tracker</h1>
+        <p class="subtitle">Track your lectures. Measure your progress. Stay consistent.</p>
+      </div>
+    </header>
+
+    <!-- ============ OVERALL PROGRESS CARD ============ -->
+    <section class="overall-card" aria-label="Overall course progress">
+      <div class="overall-glow"></div>
+      <div class="overall-content">
+        <p class="overall-label">Mathematics Progress</p>
+        <div class="overall-percent" id="overallPercent">0%</div>
+        <p class="overall-count" id="overallCount">0 / 0 lectures completed</p>
+        <div class="progress-track large">
+          <div class="progress-fill" id="overallBar" style="width: 0%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION SUMMARY CARDS ============ -->
+    <section class="section-grid" id="sectionSummaryGrid" aria-label="Section summaries">
+      <!-- Injected by JS -->
+    </section>
+
+    <!-- ============ COURSE SECTIONS (ACCORDION) ============ -->
+    <section class="course-sections" aria-label="Course sections">
+      <h2 class="course-sections-title">Course Sections</h2>
+      <div id="sectionsContainer">
+        <!-- Injected by JS -->
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Your progress is saved automatically in this browser.</p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

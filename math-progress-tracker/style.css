@@ -1,0 +1,638 @@
+/* =========================================================
+   Mathematics Course Progress Tracker — Stylesheet
+   Theme: modern, minimal, premium dark dashboard
+   ========================================================= */
+
+:root {
+  /* ---- Color palette (edit these to re-theme the app) ---- */
+  --bg: #0b0f14;
+  --surface: #111720;
+  --surface-2: #171e28;
+  --surface-hover: #1c2531;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #f5f7fa;
+  --text-secondary: #8b95a7;
+  --text-tertiary: #5c6577;
+
+  --accent: #7c6cf6;
+  --accent-2: #6a8dff;
+  --accent-soft: rgba(124, 108, 246, 0.14);
+  --accent-glow: rgba(124, 108, 246, 0.35);
+
+  --success: #3ecf8e;
+  --success-soft: rgba(62, 207, 142, 0.14);
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.28);
+  --transition-fast: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(1200px 600px at 15% -10%, rgba(124, 108, 246, 0.08), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(106, 141, 255, 0.06), transparent 55%);
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+/* ============ HEADER ============ */
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+.header h1 {
+  margin: 0 0 10px;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* ============ OVERALL PROGRESS CARD ============ */
+
+.overall-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.overall-glow {
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.overall-content {
+  position: relative;
+  z-index: 1;
+}
+
+.overall-label {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.overall-percent {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-2) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 10px;
+}
+
+.overall-percent.complete {
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--success) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.overall-count {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ============ PROGRESS BAR (shared) ============ */
+
+.progress-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-track.large {
+  height: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1), background var(--transition-fast);
+}
+
+/* A fully completed bar (100%) turns green instead of the accent color. */
+.progress-fill.complete {
+  background: linear-gradient(90deg, var(--success) 0%, #6ee7b7 100%);
+}
+
+/* ============ SECTION SUMMARY GRID ============ */
+
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 22px 22px 20px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+    background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--accent-soft);
+}
+
+.summary-card-name {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summary-card-percent {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+}
+
+.summary-card-percent.complete {
+  color: var(--success);
+}
+
+.summary-card-count {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+/* ============ COURSE SECTIONS (ACCORDION) ============ */
+
+.course-sections-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+
+.section-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+
+.section-header:hover {
+  background: var(--surface-hover);
+}
+
+.chevron {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: transform var(--transition-base);
+}
+
+.section-block.open .chevron {
+  transform: rotate(90deg);
+}
+
+.section-header-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.section-header-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.section-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.section-percent {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-2);
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.section-percent.complete {
+  color: var(--success);
+}
+
+.section-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.section-meta .progress-track {
+  flex: 1 1 auto;
+}
+
+.section-count {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.chapter-list {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-base);
+}
+
+.section-block.open .chapter-list {
+  grid-template-rows: 1fr;
+}
+
+.chapter-list-inner {
+  overflow: hidden;
+}
+
+.chapter-list-pad {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ============ CHAPTER CARDS ============ */
+
+.chapter-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+    background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chapter-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-accent, var(--accent));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3), 0 0 20px var(--card-glow, var(--accent-soft));
+}
+
+.chapter-card.empty:hover {
+  transform: none;
+  border-color: var(--border-strong);
+  box-shadow: none;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chapter-header .chevron {
+  width: 16px;
+  height: 16px;
+}
+
+.chapter-header-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.chapter-header-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.chapter-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chapter-percent {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.chapter-percent.complete {
+  color: var(--success);
+}
+
+.chapter-percent.muted {
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.chapter-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chapter-meta .progress-track {
+  flex: 1 1 auto;
+}
+
+.chapter-count {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.chapter-empty-note {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.chapter-card.empty .chapter-header {
+  cursor: default;
+}
+
+.chapter-card.empty .chevron {
+  opacity: 0.25;
+}
+
+/* Chapter lecture list */
+
+.lecture-list {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-base);
+}
+
+.chapter-card.open .lecture-list {
+  grid-template-rows: 1fr;
+}
+
+.lecture-list-inner {
+  overflow: hidden;
+}
+
+.lecture-list-pad {
+  padding: 2px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lecture-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.lecture-row:hover {
+  background: var(--surface-hover);
+}
+
+.lecture-checkbox {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.lecture-row.completed .lecture-checkbox {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  border-color: transparent;
+}
+
+.lecture-checkbox svg {
+  width: 11px;
+  height: 11px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  color: #fff;
+}
+
+.lecture-row.completed .lecture-checkbox svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lecture-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.lecture-row:hover .lecture-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px 1px currentColor !important;
+}
+
+.lecture-row.completed .lecture-icon {
+  background: var(--surface-hover) !important;
+  color: var(--text-tertiary) !important;
+  box-shadow: none !important;
+}
+
+.lecture-label {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  transition: color var(--transition-fast);
+}
+
+.lecture-row.completed .lecture-label {
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-tertiary);
+  text-decoration-thickness: 1px;
+}
+
+.lecture-date {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-left: 12px;
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.lecture-row input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ============ FOOTER ============ */
+
+.footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 860px) {
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 32px 16px 60px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .header h1 {
+    font-size: 26px;
+  }
+
+  .overall-card {
+    padding: 26px 22px;
+  }
+
+  .overall-percent {
+    font-size: 42px;
+  }
+
+  .section-header {
+    padding: 16px 18px;
+  }
+
+  .section-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .chapter-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
