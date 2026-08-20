@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Mathematics — Course Progress Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%A7%AE</text></svg>" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -17,13 +18,22 @@
         <h1>Course Progress Tracker</h1>
         <p class="subtitle">Track your lectures. Measure your progress. Stay consistent.</p>
       </div>
+      <button id="modeToggleBtn" class="btn-mode-toggle" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+        <span id="modeToggleLabel">Switch to Revision</span>
+      </button>
     </header>
 
     <!-- ============ OVERALL PROGRESS CARD ============ -->
     <section class="overall-card" aria-label="Overall course progress">
       <div class="overall-glow"></div>
       <div class="overall-content">
-        <p class="overall-label">Mathematics Progress</p>
+        <p class="overall-label" id="overallLabel">Mathematics Study Progress</p>
         <div class="overall-percent" id="overallPercent">0%</div>
         <p class="overall-count" id="overallCount">0 / 0 lectures completed</p>
         <div class="progress-track large">

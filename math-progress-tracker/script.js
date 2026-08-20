@@ -200,7 +200,13 @@ function chapterColor(chapterName) {
   return CHAPTER_COLOR_MAP[chapterName] || NEON_COLORS[0];
 }
 
-const STORAGE_KEY = "mathCourseProgress";
+/* Study and Revision are tracked as two entirely separate passes over the
+   same course content, each with its own LocalStorage key so neither
+   overwrites the other. `currentMode` decides which one the UI reads from
+   and writes to right now — toggled via the header button. */
+const STORAGE_KEY_STUDY = "mathCourseProgress";
+const STORAGE_KEY_REVISION = "mathRevisionProgress";
+let currentMode = "study"; // "study" | "revision"
 
 /* Completed lectures are tracked in an object keyed by unique lecture key,
    e.g. "arithmetic_0_3" = section "arithmetic", chapter 0, lecture index 3.
@@ -208,52 +214,71 @@ const STORAGE_KEY = "mathCourseProgress";
    { completed: true, completedDate: "YYYY-MM-DD" | null }.
    Only this completion state is persisted — percentages are never stored,
    they are always recalculated from this data. */
-let lectureData = {};
+let studyData = {};
+let revisionData = {};
+
+// Returns the data object (study or revision) that's currently active.
+function activeStore() {
+  return currentMode === "revision" ? revisionData : studyData;
+}
+
+function activeStorageKey() {
+  return currentMode === "revision" ? STORAGE_KEY_REVISION : STORAGE_KEY_STUDY;
+}
 
 /* ---------------------------------------------------------
    2. LOADING / SAVING PROGRESS (LocalStorage)
    --------------------------------------------------------- */
 
-/* Loads saved progress from LocalStorage into `lectureData`, migrating
+/* Parses one LocalStorage entry into a lecture-data object, migrating
    older save formats on the fly so past progress is never lost:
    - Oldest format: an array of completed lecture keys (no dates at all).
    - Older format: { key: true } (completed, but no date recorded).
    - Current format: { key: { completed: true, completedDate } }.
    Migrated entries always get completedDate: null since we can't know
    the real historical completion date — we never invent one. */
-function loadProgress() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  lectureData = {};
-  if (!raw) return;
+function parseStoredProgress(raw) {
+  const store = {};
+  if (!raw) return store;
 
   let parsed;
   try {
     parsed = JSON.parse(raw);
   } catch (err) {
-    return;
+    return store;
   }
 
   if (Array.isArray(parsed)) {
     parsed.forEach((key) => {
-      lectureData[key] = { completed: true, completedDate: null };
+      store[key] = { completed: true, completedDate: null };
     });
-    return;
+    return store;
   }
 
   if (parsed && typeof parsed === "object") {
     Object.keys(parsed).forEach((key) => {
       const value = parsed[key];
       if (value === true) {
-        lectureData[key] = { completed: true, completedDate: null };
+        store[key] = { completed: true, completedDate: null };
       } else if (value && typeof value === "object" && value.completed) {
-        lectureData[key] = { completed: true, completedDate: value.completedDate || null };
+        store[key] = { completed: true, completedDate: value.completedDate || null };
       }
     });
   }
+
+  return store;
 }
 
+// Loads both the study pass and the revision pass from LocalStorage so
+// switching modes never needs a page reload to show already-saved data.
+function loadProgress() {
+  studyData = parseStoredProgress(localStorage.getItem(STORAGE_KEY_STUDY));
+  revisionData = parseStoredProgress(localStorage.getItem(STORAGE_KEY_REVISION));
+}
+
+// Saves only the currently active pass (study or revision) back to its own key.
 function saveProgress() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lectureData));
+  localStorage.setItem(activeStorageKey(), JSON.stringify(activeStore()));
 }
 
 function lectureKey(sectionId, chapterIndex, lectureIndex) {
@@ -261,11 +286,13 @@ function lectureKey(sectionId, chapterIndex, lectureIndex) {
 }
 
 function isLectureCompleted(key) {
-  return Boolean(lectureData[key] && lectureData[key].completed);
+  const store = activeStore();
+  return Boolean(store[key] && store[key].completed);
 }
 
 function getLectureDate(key) {
-  return lectureData[key] ? lectureData[key].completedDate : null;
+  const store = activeStore();
+  return store[key] ? store[key].completedDate : null;
 }
 
 // Today's date as YYYY-MM-DD, using the browser's local date (not UTC).
@@ -355,13 +382,19 @@ function renderAll() {
 
 function renderOverallProgress() {
   const { total, completed, percent } = calculateOverallProgress();
+  const isComplete = percent >= 100;
+  // At 100% the universal green "done" look always wins, so the mode
+  // color is only applied when not yet complete — the two never combine.
+  const modeClass = isComplete ? "" : currentMode === "revision" ? " mode-revision" : " mode-study";
+
   const percentEl = document.getElementById("overallPercent");
   percentEl.textContent = formatPercent(percent);
-  percentEl.className = "overall-percent" + completeClass(percent);
-  document.getElementById("overallCount").textContent = `${completed} / ${total} lectures completed`;
+  percentEl.className = "overall-percent" + modeClass + completeClass(percent);
+  const verb = currentMode === "revision" ? "revised" : "completed";
+  document.getElementById("overallCount").textContent = `${completed} / ${total} lectures ${verb}`;
   const bar = document.getElementById("overallBar");
   bar.style.width = `${percent}%`;
-  bar.className = "progress-fill" + completeClass(percent);
+  bar.className = "progress-fill" + modeClass + completeClass(percent);
 }
 
 function renderSectionSummaryGrid() {
@@ -572,15 +605,41 @@ function chevronSvg() {
 
 // Checking a lecture stamps it with today's local date; unchecking it
 // removes the entry entirely (completion state and date together).
+// Always acts on whichever pass (study/revision) is currently active.
 function toggleLecture(section, chapterIndex, lectureIndex) {
   const key = lectureKey(section.id, chapterIndex, lectureIndex);
+  const store = activeStore();
   if (isLectureCompleted(key)) {
-    delete lectureData[key];
+    delete store[key];
   } else {
-    lectureData[key] = { completed: true, completedDate: getTodayLocalDateString() };
+    store[key] = { completed: true, completedDate: getTodayLocalDateString() };
   }
   saveProgress();
   renderAll();
+}
+
+// Switches between the Study pass and the Revision pass, then re-renders
+// everything against the newly active data set (open accordions stay open).
+function setMode(mode) {
+  currentMode = mode;
+  updateModeToggleUI();
+  renderAll();
+}
+
+function updateModeToggleUI() {
+  const label = document.getElementById("modeToggleLabel");
+  const button = document.getElementById("modeToggleBtn");
+  const overallLabel = document.getElementById("overallLabel");
+  const overallCount = document.getElementById("overallCount");
+  const isRevision = currentMode === "revision";
+
+  label.textContent = isRevision ? "Switch to Study" : "Switch to Revision";
+  button.classList.toggle("revision-active", isRevision);
+  overallLabel.textContent = isRevision ? "Mathematics Revision Progress" : "Mathematics Study Progress";
+  overallLabel.classList.toggle("mode-study", !isRevision);
+  overallLabel.classList.toggle("mode-revision", isRevision);
+  overallCount.classList.toggle("mode-study", !isRevision);
+  overallCount.classList.toggle("mode-revision", isRevision);
 }
 
 /* ---------------------------------------------------------
@@ -589,7 +648,11 @@ function toggleLecture(section, chapterIndex, lectureIndex) {
 
 function init() {
   loadProgress();
+  updateModeToggleUI();
   renderAll();
+  document.getElementById("modeToggleBtn").addEventListener("click", () => {
+    setMode(currentMode === "study" ? "revision" : "study");
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);

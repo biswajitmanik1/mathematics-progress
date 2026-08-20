@@ -24,6 +24,9 @@
   --success: #3ecf8e;
   --success-soft: rgba(62, 207, 142, 0.14);
 
+  --revision: #ff5c5c;
+  --revision-soft: rgba(255, 92, 92, 0.14);
+
   --radius-lg: 18px;
   --radius-md: 14px;
   --radius-sm: 10px;
@@ -94,6 +97,36 @@ body {
   color: var(--text-secondary);
 }
 
+.btn-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--transition-fast), color var(--transition-fast),
+    background var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-mode-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.btn-mode-toggle.revision-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-2);
+}
+
 /* ============ OVERALL PROGRESS CARD ============ */
 
 .overall-card {
@@ -125,11 +158,20 @@ body {
 
 .overall-label {
   margin: 0 0 10px;
-  font-size: 13px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.overall-label.mode-study {
+  color: var(--success);
+}
+
+.overall-label.mode-revision {
+  color: var(--revision);
 }
 
 .overall-percent {
@@ -144,6 +186,20 @@ body {
   margin-bottom: 10px;
 }
 
+.overall-percent.mode-study {
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--success) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.overall-percent.mode-revision {
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--revision) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Reaching 100% always wins with the universal green "done" look,
+   regardless of which mode (study/revision) is active. */
 .overall-percent.complete {
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--success) 120%);
   -webkit-background-clip: text;
@@ -152,8 +208,17 @@ body {
 
 .overall-count {
   margin: 0 0 22px;
-  font-size: 14px;
+  font-size: 20px;
   color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.overall-count.mode-study {
+  color: var(--success);
+}
+
+.overall-count.mode-revision {
+  color: var(--revision);
 }
 
 /* ============ PROGRESS BAR (shared) ============ */
@@ -180,6 +245,17 @@ body {
 
 /* A fully completed bar (100%) turns green instead of the accent color. */
 .progress-fill.complete {
+  background: linear-gradient(90deg, var(--success) 0%, #6ee7b7 100%);
+}
+
+/* Only ever applied to the overall progress bar (#overallBar), never the
+   chapter/section/summary bars, so this can't bleed into other progress
+   bars on the page. Green in both modes, per request. */
+.progress-fill.mode-study {
+  background: linear-gradient(90deg, var(--success) 0%, #6ee7b7 100%);
+}
+
+.progress-fill.mode-revision {
   background: linear-gradient(90deg, var(--success) 0%, #6ee7b7 100%);
 }
 
@@ -606,6 +682,10 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+
+  .btn-mode-toggle {
+    align-self: flex-start;
   }
 
   .header h1 {
